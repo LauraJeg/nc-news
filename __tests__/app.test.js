@@ -48,3 +48,38 @@ describe('/api/topics', () => {
         });
     });
 });
+
+describe('/api/articles/:article_id', () => {
+    test('GET:200 sends an object containing the article related to the id to the client', () => {
+        return request(app)
+      .get('/api/articles/1')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article.title).toBe("Living in the shadow of a great man");
+        expect(response.body.article.topic).toBe("mitch");
+        expect(response.body.article.author).toBe( "butter_bridge");
+        expect(response.body.article.body).toBe( "I find this existence challenging");
+        expect(response.body.article).toHaveProperty("created_at");
+        expect(response.body.article.votes).toBe(100);
+        expect(response.body.article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+      });
+    });
+    test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+        return request(app)
+          .get('/api/articles/999')
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe('No article found for article_id: 999');
+          });
+      });
+      test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
+        return request(app)
+          .get('/api/articles/not-a-team')
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe('Bad request');
+          });
+    });
+});
+
+// Consider what errors could occur with this endpoint, and make sure to test for them.
