@@ -1,5 +1,6 @@
 const app = require(`${__dirname}/../server/app.js`);
 const request = require('supertest');
+const comments = require('../db/data/test-data/comments');
 const db = require(`${__dirname}/../db/connection.js`);
 const seed = require(`${__dirname}/../db/seeds/seed.js`);
 const data = require(`${__dirname}/../db/data/test-data/index.js`)
@@ -110,12 +111,67 @@ describe('/api.articles', () => {
           });
       });
 });
+describe('/api/articles/:article_id/comments', () => {
+    test('GET:200 sends an object containing the article related to the id to the client', () => {
+        return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({body}) => {
+        const { comments } = body;
+        for (const key in comments) {
+            expect(comments[key]).toHaveProperty("comment_id");
+            expect(comments[key]).toHaveProperty("votes");
+            expect(comments[key]).toHaveProperty("created_at");
+            expect(comments[key]).toHaveProperty("author");
+            expect(comments[key]).toHaveProperty("body");
+            expect(comments[key]).toHaveProperty("article_id");
+          };
+        });
+      });
+    });
+    test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(204)
+        .then(({body}) => {
+          const { comments } = body;
+          expect(comments).toEqual([]);
+        });
+    });
+    test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+        return request(app)
+          .get('/api/articles/999/comments')
+          .expect(404)
+          .then(({body}) => {
+            expect(body.msg).toBe('No comments found for article_id: 999');
+          });
+      });
+      test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
+        return request(app)
+          .get('/api/articles/not-an-article/comments')
+          .expect(400)
+          .then(({body}) => {
+            expect(body.msg).toBe('Bad request');
+          });
+    });
 
-// comment_count, which is the total count of all the comments with this article_id. You should make use of queries to the database in order to achieve this.
-// In addition:
 
-// the articles should be sorted by date in descending order.
-// there should not be a body property present on any of the article objects.
+
+// Should:
+
+// be available on /api/articles/:article_id/comments.
+// get all comments for an article.
+// Responds with:
+
+// an array of comments for the given article_id of which each comment should have the following properties:
+// comment_id
+// votes
+// created_at
+// author
+// body
+// article_id
+// Comments should be served with the most recent comments first.
+
 // Consider what errors could occur with this endpoint, and make sure to test for them.
 
 // Remember to add a description of this endpoint to your /api endpoint.

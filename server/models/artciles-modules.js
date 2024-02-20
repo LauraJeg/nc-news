@@ -9,7 +9,7 @@ exports.fetchArticleById = (article_id) => {
         return Promise.reject({
             status: 404,
             msg: `No article found for article_id: ${article_id}`,
-          })};
+          })};git 
         return result.rows[0];
     });
 };
