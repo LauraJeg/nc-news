@@ -7,6 +7,17 @@ const data = require(`${__dirname}/../db/data/test-data/index.js`)
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
+describe('inputted path that does not exist', () => {
+    it('should return 404 sends an appropriate error message', () => {
+        return request(app)
+        .get('/api/bannana')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('Path not found');
+        });
+    });
+})
+
 describe('/api/topics', () => {
     test('GET:200 sends an array of topics to the client', () => {
       return request(app)
