@@ -49,37 +49,21 @@ describe('/api/topics', () => {
     });
 });
 
-describe('/api/article/:article_id', () => {
+describe('/api/articles/:article_id', () => {
     test('GET:200 sends an object containing the article related to the id to the client', () => {
         return request(app)
       .get('/api/articles/1')
       .expect(200)
       .then((response) => {
-        expect(response.body.article.article_id).toBe("Living in the shadow of a great man");
+        expect(response.body.article.title).toBe("Living in the shadow of a great man");
         expect(response.body.article.topic).toBe("mitch");
         expect(response.body.article.author).toBe( "butter_bridge");
-        expect(response.body.article.body).toBe( "butter_bridge");
-        expect(response.body.article.author).toBe("I find this existence challenging");
-        expect(response.body.article.created_at).toBe(1594329060000);
+        expect(response.body.article.body).toBe( "I find this existence challenging");
+        expect(response.body.article).toHaveProperty("created_at");
         expect(response.body.article.votes).toBe(100);
         expect(response.body.article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
       });
     });
 });
 
-// be available on /api/articles/:article_id.
-// get an article by its id.
-// Responds with:
-
-// an article object, which should have the following properties:
-// author
-// title
-// article_id
-// body
-// topic
-// created_at
-// votes
-// article_img_url
 // Consider what errors could occur with this endpoint, and make sure to test for them.
-
-// Remember to add a description of this endpoint to your /api endpoint.
