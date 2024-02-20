@@ -83,13 +83,17 @@ describe('/api/articles/:article_id', () => {
 });
 
 describe('/api.articles', () => {
-    test("GET:200 responds with an object describing all available articles", () => {
+    test("GET:200 responds with an object describing all available articles, ordered by most recent post", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
           .then(({ body }) => {
             const { articles } = body;
-            expect(articles.treasures).toBeSortedBy('date', { descending: true })
+            expect(articles).toBeSortedBy('created_at', {
+                descending: true,
+                coerce: true
+              });
+              expect(articles.length).toBe(13);
             for (const key in articles) {
               expect(articles[key]).toHaveProperty("author");
               expect(articles[key]).toHaveProperty("title");
@@ -101,7 +105,7 @@ describe('/api.articles', () => {
               expect(articles[key]).not.toHaveProperty("body");
               expect(articles[key]).toHaveProperty("comment_count");
               if(articles[key].article_id === 1) {
-                expect(articles[key].comment_count).toBe(11);};
+                expect(articles[key].comment_count).toBe('11');};
             };
           });
       });
