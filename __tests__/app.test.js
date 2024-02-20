@@ -64,6 +64,22 @@ describe('/api/articles/:article_id', () => {
         expect(response.body.article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
       });
     });
+    test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+        return request(app)
+          .get('/api/articles/999')
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe('No article found for article_id: 999');
+          });
+      });
+      test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
+        return request(app)
+          .get('/api/articles/not-a-team')
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe('Bad request');
+          });
+    });
 });
 
 // Consider what errors could occur with this endpoint, and make sure to test for them.
