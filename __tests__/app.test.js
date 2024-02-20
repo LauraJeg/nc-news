@@ -16,7 +16,23 @@ describe('inputted path that does not exist', () => {
             expect(response.body.msg).toBe('Path not found');
         });
     });
-})
+});
+
+describe("/api", () => {
+    test("GET:200 responds with an object describing all available endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          const { endpoints } = body;
+          for (const key in endpoints) {
+            expect(endpoints[key]).toHaveProperty("description");
+            expect(endpoints[key]).toHaveProperty("queries");
+            expect(endpoints[key]).toHaveProperty("exampleResponse");
+          }
+        });
+    });
+  });
 
 describe('/api/topics', () => {
     test('GET:200 sends an array of topics to the client', () => {
