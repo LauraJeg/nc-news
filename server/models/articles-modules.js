@@ -10,7 +10,7 @@ exports.fetchArticleById = (article_id) => {
             status: 404,
             msg: `No article found for article_id: ${article_id}`,
           })};
-        return result.rows[0];
+        return article;
     });
 };
 
@@ -22,3 +22,4 @@ exports.fetchArticles = ()=> {
         return result.rows;
     });
 };
+
