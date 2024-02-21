@@ -28,8 +28,8 @@
         ]
       }
     },
-    "GET /api/articles/aticle_id": {
-      "description": "serves an aobject relating to article_id",
+    "GET /api/articles/:article_id": {
+      "description": "serves an an object relating to article_id",
       "queries": ["article id"],
       "exampleResponse": {
         "article": [
@@ -44,7 +44,30 @@
           }
         ]
       }
+    },
+    "GET /api/articles/:article_id/comments": {
+      "description": "serves an an object relating to article_id's related comments",
+      "queries": ["article id"],
+      "exampleResponse": {
+        "comments": [
+          {
+            "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            "votes": 16,
+            "author": "butter_bridge",
+            "article_id": 9,
+            "created_at": 1586179020000
+          },
+          {
+            "body": "The owls are not what they seem.",
+            "votes": 20,
+            "author": "icellusedkars",
+           " article_id": 9,
+            "created_at": 1584205320000
+          }
+        ]
+      }
     }
+
   }
 
   

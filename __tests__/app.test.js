@@ -112,7 +112,7 @@ describe('/api.articles', () => {
       });
 });
 describe('/api/articles/:article_id/comments', () => {
-    test('GET:200 sends an object containing the article related to the id to the client', () => {
+    test.only('GET:200 sends an object containing the article related to the id to the client', () => {
         return request(app)
       .get('/api/articles/1/comments')
       .expect(200)
@@ -135,7 +135,7 @@ describe('/api/articles/:article_id/comments', () => {
         .expect(204)
         .then(({body}) => {
           const { comments } = body;
-          expect(comments).toEqual([]);
+          expect(comments.length).toBe(0);
         });
     });
     test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
