@@ -275,7 +275,7 @@ describe('/api/articles/:article_id/comments', () => {
 });
 describe('/api/comments/:comment_id', () => {
   describe('DELETE', () => {
-    test.only("DELETE:204 deletes the specified comment and does not respond with a body", () => {
+    test("DELETE:204 deletes the specified comment and does not respond with a body", () => {
       return request(app).delete("/api/comments/4").expect(204);
     });
     test("DELETE:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
@@ -291,7 +291,7 @@ describe('/api/comments/:comment_id', () => {
         .delete("/api/comments/not-a-comment")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
+          expect(body.msg).toBe("Bad request");
         });
     });
   });
