@@ -117,7 +117,7 @@ describe('/api/articles/:article_id', () => {
           .send({ inc_votes: -20 })
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("'No article found for article_id: 999'");
+            expect(msg).toBe('No article found for article_id: 999');
           });
       });
       test("PATCH 400: responds with correct status and error message when requesting an invalid ID", () => {
