@@ -112,12 +112,16 @@ describe('/api.articles', () => {
       });
 });
 describe('/api/articles/:article_id/comments', () => {
-    test.only('GET:200 sends an object containing the article related to the id to the client', () => {
+    test.only('GET:200 sends an object containing the article related to the id to the client, ordered by lastest posting', () => {
         return request(app)
       .get('/api/articles/1/comments')
       .expect(200)
       .then(({body}) => {
         const { comments } = body;
+        expect(comments).toBeSortedBy('created_at', {
+            descending: true,
+            coerce: true
+          });
         for (const key in comments) {
             expect(comments[key]).toHaveProperty("comment_id");
             expect(comments[key]).toHaveProperty("votes");
