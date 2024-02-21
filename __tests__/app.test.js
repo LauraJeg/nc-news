@@ -272,8 +272,10 @@ describe('/api/articles/:article_id/comments', () => {
             });
         });
     });
+});
+describe('/api/comments/:comment_id', () => {
   describe('DELETE', () => {
-    test("DELETE:204 deletes the specified comment and does not respond with a body", () => {
+    test.only("DELETE:204 deletes the specified comment and does not respond with a body", () => {
       return request(app).delete("/api/comments/4").expect(204);
     });
     test("DELETE:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
