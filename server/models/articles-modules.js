@@ -23,3 +23,15 @@ exports.fetchArticles = ()=> {
     });
 };
 
+exports.updateVotes = (newVotes, article_id) => {
+    return db
+    .query(`UPDATE articles
+         SET votes = votes + $1
+         WHERE  article_id = $2
+         RETURNING *`, 
+         [newVotes.inc_votes, article_id])
+         .then((result) => {
+            return result.rows[0];
+         });
+};
+

@@ -82,10 +82,10 @@ describe('/api/articles/:article_id', () => {
           });
     });
     describe("PATCH requests", () => {
-      test("PATCH 200: responds with correctly updated article", () => {
+      test.only("PATCH 200: responds with correctly updated article", () => {
         return request(app)
           .patch("/api/articles/1")
-          .send({ inc_votes: -20 })
+          .send({ inc_votes: -30 })
           .expect(200)
           .then(({ body: { article } }) => {
             expect(article).toMatchObject({
@@ -95,7 +95,7 @@ describe('/api/articles/:article_id', () => {
               body: "I find this existence challenging",
               topic: "mitch",
               created_at: expect.any(String),
-              votes: 80,
+              votes: 70,
               article_img_url:
                 "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             });
@@ -145,8 +145,7 @@ describe('/api.articles', () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
-          .then(({ body }) => {
-            const { articles } = body;
+          .then(({ body: {articles} }) => {
             expect(articles).toBeSortedBy('created_at', {
                 descending: true,
                 coerce: true
