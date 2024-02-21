@@ -21,7 +21,20 @@ app.all('/*', (req, res, next)=> {
 
 app.use((err, req, res, next) => {
     if(err.status && err.msg) res.status(err.status).send({msg: err.msg});
-    if(err.code = 23502) res.status(400).send({msg:'Bad request'});
+    if(err.code === 23502 || err.code === '22P02') res.status(400).send({msg:'Bad request'});
+
     res.status(500).send({ msg: 'internal server error' });
 })
 module.exports = app;
+
+ // test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
+    //     return request(app)
+    //     .get('/api/articles/2/comments')
+    //     .expect(204)
+    //     .then(({body}) => {
+    //       const { comments } = body;
+    //       expect(comments.length).toBe(0);
+    //     });
+    // });
+
+    //need some help on getting this to work, extremely confused

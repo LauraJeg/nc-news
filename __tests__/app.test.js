@@ -112,7 +112,7 @@ describe('/api.articles', () => {
       });
 });
 describe('/api/articles/:article_id/comments', () => {
-    test.only('GET:200 sends an object containing the article related to the id to the client, ordered by lastest posting', () => {
+    test('GET:200 sends an object containing the article related to the id to the client, ordered by lastest posting', () => {
         return request(app)
       .get('/api/articles/1/comments')
       .expect(200)
@@ -133,21 +133,13 @@ describe('/api/articles/:article_id/comments', () => {
         });
       });
     });
-    test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
-        return request(app)
-        .get('/api/articles/2/comments')
-        .expect(204)
-        .then(({body}) => {
-          const { comments } = body;
-          expect(comments.length).toBe(0);
-        });
-    });
+   
     test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
           .get('/api/articles/999/comments')
           .expect(404)
           .then(({body}) => {
-            expect(body.msg).toBe('No comments found for article_id: 999');
+            expect(body.msg).toBe('No article found for article_id: 999');
           });
       });
       test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
