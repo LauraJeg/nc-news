@@ -168,6 +168,7 @@ describe('/api.articles', () => {
       });
 });
 describe('/api/articles/:article_id/comments', () => {
+  describe('GET', () => {
     test('GET:200 sends an object containing the article related to the id to the client, ordered by lastest posting', () => {
         return request(app)
       .get('/api/articles/1/comments')
@@ -188,8 +189,6 @@ describe('/api/articles/:article_id/comments', () => {
           };
         });
       });
-
-   
     test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
           .get('/api/articles/999/comments')
@@ -206,87 +205,94 @@ describe('/api/articles/:article_id/comments', () => {
             expect(body.msg).toBe('Bad request');
           });
     });
-    test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
-      return request(app)
-      .get('/api/articles/2/comments')
-      .expect(204)
-      .then(({body}) => {
-        expect(body).toEqual({});
-      });
   });
-    test('POST: 201 inserts new comment and returns comment to client', () => {
-        const newComment = {
-            username: 'butter_bridge',
-            body: 'new comment'
-        };
+    describe('POST', () => {
+      test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
         return request(app)
-        .post('/api/articles/2/comments')
-        .send(newComment)
-        .expect(201)
-        .then(({body: {comment}}) => {
-          expect(comment).toMatchObject({
-            comment_id: 19,
-            author: 'butter_bridge',
-            votes: 0,
-            article_id: 2,
-            body: 'new comment',
-            created_at: expect.any(String)
+        .get('/api/articles/2/comments')
+        .expect(204)
+        .then(({body}) => {
+          expect(body).toEqual({});
+        });
+      });
+      test('POST: 201 inserts new comment and returns comment to client', () => {
+          const newComment = {
+              username: 'butter_bridge',
+              body: 'new comment'
+          };
+          return request(app)
+          .post('/api/articles/2/comments')
+          .send(newComment)
+          .expect(201)
+          .then(({body: {comment}}) => {
+            expect(comment).toMatchObject({
+              comment_id: 19,
+              author: 'butter_bridge',
+              votes: 0,
+              article_id: 2,
+              body: 'new comment',
+              created_at: expect.any(String)
+            });
           });
+      });
+      test("POST 400: responds with appropriate status and error message when request has invalid content", () => {
+          return request(app)
+            .post("/api/articles/5/comments")
+            .send({
+              username: "Simon",
+              body: 12789041
+            })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad request");
+            });
+        });
+        test("POST 404: sends an appropriate status and error message when given a valid but non-existent id", () => {
+          return request(app)
+            .post("/api/articles/999/comments")
+            .send({
+              username: "Mashca",
+              body: "New article is great!"
+            })
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("No article found for article_id: 999");
+            });
+        });
+        test("POST 400: sends an appropriate status and error message when given an invalid id", () => {
+          return request(app)
+            .get("/api/articles/not-an-article/comments")
+            .send({
+              username: "Mashca",
+              body: "New article is great!"
+            })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad request");
+            });
         });
     });
-    test("POST 400: responds with appropriate status and error message when request has invalid content", () => {
-        return request(app)
-          .post("/api/articles/5/comments")
-          .send({
-            username: "Simon",
-            body: 12789041
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request");
-          });
-      });
-      test("POST 404: sends an appropriate status and error message when given a valid but non-existent id", () => {
-        return request(app)
-          .post("/api/articles/999/comments")
-          .send({
-            username: "Mashca",
-            body: "New article is great!"
-          })
-          .expect(404)
-          .then(({ body: { msg } }) => {
-            expect(msg).toBe("No article found for article_id: 999");
-          });
-      });
-      test("POST 400: sends an appropriate status and error message when given an invalid id", () => {
-        return request(app)
-          .get("/api/articles/not-an-article/comments")
-          .send({
-            username: "Mashca",
-            body: "New article is great!"
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toBe("Bad request");
-          });
-      });
 });
-
-
-// be available on /api/articles/:article_id.
-// update an article by article_id.
-
-// Request body accepts:
-
-// an object in the form { inc_votes: newVote }.
-// newVote will indicate how much the votes property in the database should be updated by, e.g.
-//     { inc_votes : 1 } would increment the current article's vote property by 1
-//     { inc_votes : -100 } would decrement the current article's vote property by 100
-
-// Responds with:
-
-// the updated article
-
-// Consider what errors could occur with this endpoint, and make sure to test for them.
-
-// Remember to add a description of this endpoint to your /api endpoint. 
+describe('/api/comments/:comment_id', () => {
+  describe('DELETE', () => {
+    test("DELETE:204 deletes the specified comment and does not respond with a body", () => {
+      return request(app).delete("/api/comments/4").expect(204);
+    });
+    test("DELETE:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+      return request(app)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("No comment found for comment_id: 999");
+        });
+    });
+    test("DELETE:400 sends an appropriate status and error message when given an invalid id", () => {
+      return request(app)
+        .delete("/api/comments/not-a-comment")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+  });
+});
