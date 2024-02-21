@@ -17,7 +17,12 @@ exports.getCommentsByArticleId = (req,res,next) => {
 exports.postNewComment = (req,res,next)=> {
     const newComment = req.body;
     const {article_id} = req.params;
-    insertNewComment(newComment, article_id).then((comment)=>{
-        res.status(201).send({ comment });
-    })
+    return Promise.all([
+        fetchArticleById(article_id),
+        insertNewComment(newComment, article_id)
+      ])
+        .then((returnedPromises) => {
+          res.status(201).send({ comment: returnedPromises[1] });
+        })
+        .catch(next);
 };

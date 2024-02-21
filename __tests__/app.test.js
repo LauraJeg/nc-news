@@ -151,7 +151,7 @@ describe('/api/articles/:article_id/comments', () => {
           });
     
     });
-    test.only('POST: 201 inserts new comment and returns comment to client', () => {
+    test('POST: 201 inserts new comment and returns comment to client', () => {
         const newComment = {
             username: 'butter_bridge',
             body: 'new comment'
@@ -171,7 +171,7 @@ describe('/api/articles/:article_id/comments', () => {
           });
         });
     });
-    test("POST 400: responds with appropriate status and error message when request has invalid content", () => {
+    test.only("POST 400: responds with appropriate status and error message when request has invalid content", () => {
         return request(app)
           .post("/api/articles/5/comments")
           .send({
