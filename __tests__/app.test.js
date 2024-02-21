@@ -75,12 +75,69 @@ describe('/api/articles/:article_id', () => {
       });
       test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
         return request(app)
-          .get('/api/articles/not-a-team')
+          .get('/api/articles/not-an-article')
           .expect(400)
           .then(({body}) => {
             expect(body.msg).toBe('Bad request');
           });
     });
+    describe("PATCH requests", () => {
+      test("PATCH 200: responds with correctly updated article", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: -20 })
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).toMatchObject({
+              author: "butter_bridge",
+              title: "Living in the shadow of a great man",
+              article_id: 1,
+              body: "I find this existence challenging",
+              topic: "mitch",
+              created_at: expect.any(String),
+              votes: 80,
+              article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            });
+          });
+      });
+      test("PATCH 400: responds with appropriate status and error message when request has invalid content passed through", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: "four" })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request");
+          });
+      });
+    });
+      test("PATCH 404: sends an appropriate status and error message when given a valid but non-existent id", () => {
+        return request(app)
+          .patch("/api/articles/999")
+          .send({ inc_votes: -20 })
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("'No article found for article_id: 999'");
+          });
+      });
+      test("PATCH 400: responds with correct status and error message when requesting an invalid ID", () => {
+        return request(app)
+          .patch("/api/articles/not-an-article")
+          .send({ inc_votes: -20 })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request");
+          });
+      });
+      test("PATCH 400: responds with appropriate status and error message when request has missing fields", () => {
+        return request(app)
+          .patch("/api/articles/5")
+          .send({})
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request");
+          });
+      });
 });
 
 describe('/api.articles', () => {
@@ -134,7 +191,7 @@ describe('/api/articles/:article_id/comments', () => {
       });
 
    
-    test.only('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+    test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
           .get('/api/articles/999/comments')
           .expect(404)
@@ -215,3 +272,22 @@ describe('/api/articles/:article_id/comments', () => {
           });
       });
 });
+
+
+// be available on /api/articles/:article_id.
+// update an article by article_id.
+
+// Request body accepts:
+
+// an object in the form { inc_votes: newVote }.
+// newVote will indicate how much the votes property in the database should be updated by, e.g.
+//     { inc_votes : 1 } would increment the current article's vote property by 1
+//     { inc_votes : -100 } would decrement the current article's vote property by 100
+
+// Responds with:
+
+// the updated article
+
+// Consider what errors could occur with this endpoint, and make sure to test for them.
+
+// Remember to add a description of this endpoint to your /api endpoint. 
