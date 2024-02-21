@@ -134,7 +134,7 @@ describe('/api/articles/:article_id/comments', () => {
       });
 
    
-    test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+    test.only('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
           .get('/api/articles/999/comments')
           .expect(404)
@@ -149,8 +149,15 @@ describe('/api/articles/:article_id/comments', () => {
           .then(({body}) => {
             expect(body.msg).toBe('Bad request');
           });
-    
     });
+    test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
+      return request(app)
+      .get('/api/articles/2/comments')
+      .expect(204)
+      .then(({body}) => {
+        expect(body).toEqual({});
+      });
+  });
     test('POST: 201 inserts new comment and returns comment to client', () => {
         const newComment = {
             username: 'butter_bridge',

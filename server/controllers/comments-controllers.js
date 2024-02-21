@@ -9,6 +9,8 @@ exports.getCommentsByArticleId = (req,res,next) => {
         fetchArticleById(article_id),
       ])
         .then((returnedPromises) => {
+
+          if(returnedPromises[0].length === 0) res.status(204).send({ comments: 'There are no comments related to this article' })
           res.status(200).send({ comments: returnedPromises[0] });
         })
         .catch(next);
