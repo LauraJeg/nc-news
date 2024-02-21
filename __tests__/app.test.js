@@ -171,7 +171,7 @@ describe('/api/articles/:article_id/comments', () => {
           });
         });
     });
-    test.only("POST 400: responds with appropriate status and error message when request has invalid content", () => {
+    test("POST 400: responds with appropriate status and error message when request has invalid content", () => {
         return request(app)
           .post("/api/articles/5/comments")
           .send({
