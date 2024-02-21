@@ -82,7 +82,7 @@ describe('/api/articles/:article_id', () => {
           });
     });
     describe("PATCH requests", () => {
-      test.only("PATCH 200: responds with correctly updated article", () => {
+      test("PATCH 200: responds with correctly updated article", () => {
         return request(app)
           .patch("/api/articles/1")
           .send({ inc_votes: -30 })
