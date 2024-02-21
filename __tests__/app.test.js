@@ -151,7 +151,7 @@ describe('/api/articles/:article_id/comments', () => {
           });
     
     });
-    test('POST: 201 inserts new comment and returns comment to client', () => {
+    test.only('POST: 201 inserts new comment and returns comment to client', () => {
         const newComment = {
             username: 'butter_bridge',
             body: 'new comment'
@@ -166,6 +166,7 @@ describe('/api/articles/:article_id/comments', () => {
             author: 'butter_bridge',
             votes: 0,
             article_id: 2,
+            body: 'new comment',
             created_at: expect.any(String)
           });
         });
