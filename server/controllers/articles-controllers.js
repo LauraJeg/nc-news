@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles, updateVotes } = require("../models/articles-modules");
+const { fetchArticleById, fetchArticles, updateVotes } = require("../models/articles-models");
 
 exports.getArticleById = (req, res, next) => {
 

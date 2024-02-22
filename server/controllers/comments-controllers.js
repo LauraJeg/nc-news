@@ -1,6 +1,6 @@
 
-const { fetchArticleById } = require("../models/articles-modules");
-const { fetchComments, insertNewComment, removeComment } = require("../models/comments-modules");
+const { fetchArticleById } = require("../models/articles-models");
+const { fetchComments, insertNewComment, removeComment } = require("../models/comments-models");
 
 exports.getCommentsByArticleId = (req,res,next) => {
     const {article_id} = req.params;
