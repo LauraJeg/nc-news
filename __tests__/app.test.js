@@ -65,6 +65,24 @@ describe('/api/articles/:article_id', () => {
         expect(body.article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
       });
     });
+    test("GET:200 responce includes a comment_count property", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body: {article} }) => {
+          expect(article).toHaveProperty("comment_count");
+          expect(article.comment_count).toBe(11);
+        });
+    });
+    test("GET:200 responce includes a comment_count property with value 0 when no comments are associated with the article", () => {
+      return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then(({ body: {article} }) => {
+          expect(article).toHaveProperty("comment_count");
+          expect(article.comment_count).toBe(0);
+        });
+    });
     test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
         return request(app)
           .get('/api/articles/999')
@@ -178,7 +196,7 @@ describe('/api/articles', () => {
           });
         });
       });
-      test.only("GET:200 when given topic query that exists, but has no associated articles", () => {
+      test("GET:200 when given topic query that exists, but has no associated articles", () => {
         return request(app)
           .get("/api/articles?topic=paper")
           .expect(200)
@@ -347,3 +365,9 @@ describe("/api/users", () => {
     });
   });
 });
+// CORE: GET /api/articles/:article_id (comment_count)
+// Description
+
+// FEATURE REQUEST An article response object should also now include:
+
+//     comment_count, which is the total count of all the comments with this article_id. You should make use of queries to the database in order to achieve this.
