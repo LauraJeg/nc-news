@@ -167,11 +167,29 @@ describe('/api/articles', () => {
               });
           });
       });
-      test('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
+      test.only('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
         return request(app)
-        .get('/api/articles?topic=cats')
+        .get("/api/articles?topic=mitch")
         .expect(200)
-        
+        .then(({ body: {articles}}) => {
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+      });
+      test("GET:204 when given topic query that exists, but has no associated articles", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(204);
+      });
+      test("GET:404  sends an appropriate status and error message when given a valid but non-existent id", () => {
+        return request(app)
+          .get("/api/articles?topic=climbing")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("No articles found for topic: climbing");
+          });
       });
     });
 });
