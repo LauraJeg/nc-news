@@ -52,7 +52,7 @@ describe('/api/topics', () => {
 
 describe('/api/articles/:article_id', () => {
     test('GET:200 sends an object containing the article related to the id to the client', () => {
-        return request(app)
+      return request(app)
       .get('/api/articles/1')
       .expect(200)
       .then(({body}) => {
@@ -140,7 +140,8 @@ describe('/api/articles/:article_id', () => {
       });
 });
 
-describe('/api.articles', () => {
+describe('/api/articles', () => {
+  describe('GET', () => {
     test("GET:200 responds with an object describing all available articles, ordered by most recent post", () => {
         return request(app)
           .get("/api/articles")
@@ -150,22 +151,50 @@ describe('/api.articles', () => {
                 descending: true,
                 coerce: true
               });
+              expect(articles[0].comment_count).toBe("2")
               expect(articles.length).toBe(13);
-            for (const key in articles) {
-              expect(articles[key]).toHaveProperty("author");
-              expect(articles[key]).toHaveProperty("title");
-              expect(articles[key]).toHaveProperty("article_id");
-              expect(articles[key]).toHaveProperty("topic");
-              expect(articles[key]).toHaveProperty("created_at");
-              expect(articles[key]).toHaveProperty("votes");
-              expect(articles[key]).toHaveProperty("article_img_url");
-              expect(articles[key]).not.toHaveProperty("body");
-              expect(articles[key]).toHaveProperty("comment_count");
-              if(articles[key].article_id === 1) {
-                expect(articles[key].comment_count).toBe('11');};
-            };
+              articles.forEach((article) => {
+                expect(article).toMatchObject({
+                  title: expect.any(String),
+                  created_at: expect.any(String),
+                  author: expect.any(String),
+                  article_id:  expect.any(Number),
+                  topic: expect.any(String),
+                  article_img_url: expect.any(String),
+                  comment_count: expect.any(String)
+                });
+                expect(article).not.toHaveProperty("body");
+              });
           });
       });
+      test('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
+        return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body: {articles}}) => {
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+      });
+      test.only("GET:200 when given topic query that exists, but has no associated articles", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(200)
+          .then(({ body: {articles} }) => {
+            expect(articles).toEqual([]);
+          });
+      });
+      test("GET:404  sends an appropriate status and error message when given a valid but non-existent id", () => {
+        return request(app)
+          .get("/api/articles?topic=climbing")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("No articles found for topic: climbing");
+          });
+      });
+    });
 });
 describe('/api/articles/:article_id/comments', () => {
   describe('GET', () => {
@@ -179,14 +208,16 @@ describe('/api/articles/:article_id/comments', () => {
             descending: true,
             coerce: true
           });
-        for (const key in comments) {
-            expect(comments[key]).toHaveProperty("comment_id");
-            expect(comments[key]).toHaveProperty("votes");
-            expect(comments[key]).toHaveProperty("created_at");
-            expect(comments[key]).toHaveProperty("author");
-            expect(comments[key]).toHaveProperty("body");
-            expect(comments[key]).toHaveProperty("article_id");
-          };
+          expect(comments.length).toBe(11);
+          comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id:  expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              article_id:  expect.any(Number)
+            });
+            expect(comment).toHaveProperty("body");
+          });
         });
       });
     test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
@@ -205,16 +236,16 @@ describe('/api/articles/:article_id/comments', () => {
             expect(body.msg).toBe('Bad request');
           });
     });
+    test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
+      return request(app)
+      .get('/api/articles/2/comments')
+      .expect(204)
+      .then(({body}) => {
+        expect(body).toEqual({});
+      });
+    });
   });
     describe('POST', () => {
-      test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
-        return request(app)
-        .get('/api/articles/2/comments')
-        .expect(204)
-        .then(({body}) => {
-          expect(body).toEqual({});
-        });
-      });
       test('POST: 201 inserts new comment and returns comment to client', () => {
           const newComment = {
               username: 'butter_bridge',

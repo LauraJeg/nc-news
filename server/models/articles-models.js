@@ -1,3 +1,5 @@
+const { fetchTopics } = require("./topics-models");
+
 const db = require(`${__dirname}/../../db/connection.js`);
 
 exports.fetchArticleById = (article_id) => {
@@ -14,11 +16,31 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = ()=> {
-    return db.query(`SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) as comment_count FROM articles
-    LEFT JOIN comments USING (article_id)
-    GROUP BY article_id
-    ORDER BY articles.created_at DESC;`).then((result)=>{
+exports.fetchArticles = (topic)=> {
+    const queryVals = [];
+    let strQuery = `SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) as comment_count FROM comments
+    RIGHT JOIN articles USING (article_id)`;
+
+    if(topic){
+        queryVals.push(topic);
+        strQuery += ` WHERE topic = $1`;
+    }
+    strQuery += `GROUP BY article_id
+    ORDER BY articles.created_at DESC;`;
+
+    return Promise.all([fetchTopics(), db.query(strQuery, queryVals)]).then(([allTopics, articles])=> {
+        if (articles.rows.length === 0) {
+            if(allTopics.find(topicData => topicData.slug === topic) !== undefined) return articles.rows;
+            return Promise.reject({ 
+                status: 404, 
+                msg: `No articles found for topic: ${topic}` })};
+        return articles.rows;
+    })
+    return db.query(strQuery, queryVals).then((result)=>{
+        if (result.rows.length === 0) {
+            return Promise.reject({ 
+                status: 404, 
+                msg: `No articles found for topic: ${topic}` })};
         return result.rows;
     });
 };
