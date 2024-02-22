@@ -196,7 +196,7 @@ describe('/api/articles', () => {
           });
         });
       });
-      test.only("GET:200 when given topic query that exists, but has no associated articles", () => {
+      test("GET:200 when given topic query that exists, but has no associated articles", () => {
         return request(app)
           .get("/api/articles?topic=paper")
           .expect(200)

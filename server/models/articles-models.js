@@ -4,7 +4,11 @@ const db = require(`${__dirname}/../../db/connection.js`);
 
 exports.fetchArticleById = (article_id) => {
     return db
-    .query('SELECT * FROM articles WHERE article_id = $1;', [article_id])
+    .query( `SELECT articles.*, COUNT(comments.article_id)::INT AS comment_count
+    FROM articles 
+    LEFT JOIN comments USING (article_id)
+    WHERE article_id = $1
+    GROUP BY articles.article_id`, [article_id])
     .then((result) => {
         const article = result.rows[0];
         if(!article) {
@@ -29,19 +33,14 @@ exports.fetchArticles = (topic)=> {
     ORDER BY articles.created_at DESC;`;
 
     return Promise.all([fetchTopics(), db.query(strQuery, queryVals)]).then(([allTopics, articles])=> {
+        //error handling
         if (articles.rows.length === 0) {
             if(allTopics.find(topicData => topicData.slug === topic) !== undefined) return articles.rows;
             return Promise.reject({ 
                 status: 404, 
                 msg: `No articles found for topic: ${topic}` })};
+
         return articles.rows;
-    })
-    return db.query(strQuery, queryVals).then((result)=>{
-        if (result.rows.length === 0) {
-            return Promise.reject({ 
-                status: 404, 
-                msg: `No articles found for topic: ${topic}` })};
-        return result.rows;
     });
 };
 

@@ -20,9 +20,9 @@ exports.getArticles = (req,res,next)=> {
 exports.patchVotesByArticleId = (req,res,next) => {
     const {article_id} = req.params;
     const newVotes = req.body;
-    Promise.all([fetchArticleById(article_id) ,updateVotes(newVotes, article_id)])
-        .then((returnedPromises)=> {
-            res.status(200).send({article: returnedPromises[1]})
+    Promise.all([fetchArticleById(article_id), updateVotes(newVotes, article_id)])
+        .then(([article, updatedVotes])=> {
+            res.status(200).send({article: updatedVotes})
         })
         .catch(next);
 };
