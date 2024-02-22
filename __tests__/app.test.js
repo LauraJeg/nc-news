@@ -167,7 +167,7 @@ describe('/api/articles', () => {
               });
           });
       });
-      test.only('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
+      test('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
         return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
@@ -178,10 +178,13 @@ describe('/api/articles', () => {
           });
         });
       });
-      test("GET:204 when given topic query that exists, but has no associated articles", () => {
+      test("GET:200 when given topic query that exists, but has no associated articles", () => {
         return request(app)
           .get("/api/articles?topic=paper")
-          .expect(204);
+          .expect(200)
+          .then(({ body: {articles} }) => {
+            expect(articles).toEqual([]);
+          });
       });
       test("GET:404  sends an appropriate status and error message when given a valid but non-existent id", () => {
         return request(app)
@@ -233,16 +236,16 @@ describe('/api/articles/:article_id/comments', () => {
             expect(body.msg).toBe('Bad request');
           });
     });
+    test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
+      return request(app)
+      .get('/api/articles/2/comments')
+      .expect(204)
+      .then(({body}) => {
+        expect(body).toEqual({});
+      });
+    });
   });
     describe('POST', () => {
-      test('GET: 204 returns an empty array when a valid article is passed that does not have any associated comments', () => {
-        return request(app)
-        .get('/api/articles/2/comments')
-        .expect(204)
-        .then(({body}) => {
-          expect(body).toEqual({});
-        });
-      });
       test('POST: 201 inserts new comment and returns comment to client', () => {
           const newComment = {
               username: 'butter_bridge',
