@@ -52,7 +52,6 @@ exports.updateVotes = (newVotes, article_id) => {
          RETURNING *`, 
          [newVotes.inc_votes, article_id])
          .then((result) => {
-            if (result.rows.length === 0) {return Promise.reject({ status: 400, msg: 'bad request' })};
             return result.rows[0];
          });
 };
