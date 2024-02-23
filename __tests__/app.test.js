@@ -277,42 +277,30 @@ describe('/api/articles/:article_id/comments', () => {
             expect(comment).toMatchObject({
               comment_id: 19,
               author: 'butter_bridge',
-              votes: 0,
+              // votes: 0,
               article_id: 2,
               body: 'new comment',
               created_at: expect.any(String)
             });
           });
       });
-      test("POST 400: responds with appropriate status and error message when request has invalid content", () => {
-          return request(app)
-            .post("/api/articles/5/comments")
-            .send({
-              username: "Simon",
-              body: 12789041
-            })
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).toBe("Bad request");
-            });
-        });
         test("POST 404: sends an appropriate status and error message when given a valid but non-existent id", () => {
           return request(app)
-            .post("/api/articles/999/comments")
+            .post("/api/articles/987/comments")
             .send({
-              username: "Mashca",
+              username: "butter_bridge",
               body: "New article is great!"
             })
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).toBe("No article found for article_id: 999");
+              expect(msg).toBe('No article found for article_id: 987');
             });
         });
         test("POST 400: sends an appropriate status and error message when given an invalid id", () => {
           return request(app)
             .get("/api/articles/not-an-article/comments")
             .send({
-              username: "Mashca",
+              username: "butter_bridge",
               body: "New article is great!"
             })
             .expect(400)

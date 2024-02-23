@@ -19,14 +19,14 @@ exports.getCommentsByArticleId = (req,res,next) => {
 exports.postNewComment = (req,res,next)=> {
     const newComment = req.body;
     const {article_id} = req.params;
-    return Promise.all([
-        fetchArticleById(article_id),
-        insertNewComment(newComment, article_id)
-      ])
-        .then((returnedPromises) => {
-          res.status(201).send({ comment: returnedPromises[1] });
-        })
-        .catch(next);
+    //nested .then because of concurrency problems with Promise.all.
+    fetchArticleById(article_id).then(()=> {
+      return insertNewComment(newComment, article_id)
+      .then((comment)=> {
+        res.status(201).send({ comment});
+      }).catch(next);
+    })
+    .catch(next);
 };
 
 exports.deleteComment = (req, res, next)=> {
