@@ -217,16 +217,28 @@ describe('/api/articles', () => {
       });
 
       describe('sort by', () => {
-        test('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
+        test.only('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
           return request(app)
           .get("/api/articles?sort_by=title")
           .expect(200)
           .then(({ body: {articles}}) => {
             expect(articles).toBeSortedBy('title', {
-              descending: true,
+              descending: true
             });
           });
-        });
+          });
+         test('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
+          return request(app)
+          .get("/api/articles?sort_by=comment_count")
+          .expect(200)
+          .then(({ body: {articles}}) => {
+            expect(articles).toBeSortedBy('comment_count', {
+              descending: true,
+              coerce: true
+            });
+          });
+          });
+        
         test("GET:200 should sort by created_at as a default", () => {
           return request(app)
             .get("/api/articles")
@@ -417,9 +429,3 @@ describe("/api/users", () => {
     });
   });
 });
-
-//     order, which can be set to asc or desc for ascending or descending (defaults to descending).
-
-// Consider what errors could occur with this endpoint, and make sure to test for them.
-
-// Remember to add a description of this endpoint to your /api endpoint. 

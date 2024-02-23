@@ -27,7 +27,6 @@ exports.fetchArticles = (topic, sort_by = "created_at", order='desc')=> {
 
     const validSortBy = ["article_id", "title", "author", "created_at", "votes", "body", "article_img_url", "topic", 'comment_count'];
     const validOrder = ["asc", "desc"];
-    console.log(order)
 
     if(topic){
         queryVals.push(topic);
