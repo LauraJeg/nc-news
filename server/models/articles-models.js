@@ -20,17 +20,27 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = (topic)=> {
+exports.fetchArticles = (topic, sort_by = "created_at", order='desc')=> {
     const queryVals = [];
     let strQuery = `SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) as comment_count FROM comments
     RIGHT JOIN articles USING (article_id)`;
 
+    const validSortBy = ["article_id", "title", "author", "created_at", "votes", "body", "article_img_url", "topic", 'comment_count'];
+    const validOrder = ["asc", "desc"];
+
     if(topic){
         queryVals.push(topic);
         strQuery += ` WHERE topic = $1`;
-    }
+    };
+
+    if(!validSortBy.includes(sort_by) || !validOrder.includes(order)){
+        return Promise.reject({
+            status: 400,
+            msg: `Bad request`
+          });
+    };
     strQuery += `GROUP BY article_id
-    ORDER BY articles.created_at DESC;`;
+    ORDER BY ${sort_by} ${order};`;
 
     return Promise.all([fetchTopics(), db.query(strQuery, queryVals)]).then(([allTopics, articles])=> {
         //error handling
@@ -39,7 +49,6 @@ exports.fetchArticles = (topic)=> {
             return Promise.reject({ 
                 status: 404, 
                 msg: `No articles found for topic: ${topic}` })};
-
         return articles.rows;
     });
 };
