@@ -217,7 +217,7 @@ describe('/api/articles', () => {
       });
 
       describe('sort by', () => {
-        test.only('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
+        test('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
           return request(app)
           .get("/api/articles?sort_by=title")
           .expect(200)
@@ -240,6 +240,36 @@ describe('/api/articles', () => {
         test("GET:400 sends an appropriate status and error message when given an invalid category", () => {
           return request(app)
             .get("/api/articles?sort_by=errors")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad request");
+            });
+        });
+      });
+      describe('order by', ()=> {
+        test('GET:200 should take a order query which orders the articles specified by the query.', () => {
+          return request(app)
+          .get("/api/articles?order=asc")
+          .expect(200)
+          .then(({ body: {articles}}) => {
+            expect(articles).toBeSorted({
+              descending: false,
+            });
+          });
+        });
+        test("GET:200 should have a descending order as a default", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body: {articles} }) => {
+              expect(articles).toBeSorted({
+                descending: true,
+              });
+            });
+        });
+        test("GET:400 sends an appropriate status and error message when given an invalid category", () => {
+          return request(app)
+            .get("/api/articles?order=errors")
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toBe("Bad request");
@@ -388,13 +418,8 @@ describe("/api/users", () => {
   });
 });
 
-// FEATURE REQUEST The endpoint should also accept the following queries:
-
-//     sort_by, which sorts the articles by any valid column (defaults to the created_at date).
 //     order, which can be set to asc or desc for ascending or descending (defaults to descending).
 
 // Consider what errors could occur with this endpoint, and make sure to test for them.
-
-// You should not have to amend any previous tests.
 
 // Remember to add a description of this endpoint to your /api endpoint. 

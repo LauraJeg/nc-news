@@ -9,6 +9,8 @@ Link to hosted version: https://nc-news-94l5.onrender.com
 The intention of this project is to mimic the building of a real world backend service (such as GitHub) which should provide this information to the front end architecture.
 This project uses `Node.js` and `PostgreSQL` to build a backend database and associated API. After recieving requests from clients using various endpoints, the app responds with the required data from the databases.
 
+**Note** Use /api to see all the endpoints available.
+
 
 ## Minimum version requirements
 
