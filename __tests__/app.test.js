@@ -185,32 +185,62 @@ describe('/api/articles', () => {
               });
           });
       });
-      test('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
-        return request(app)
-        .get("/api/articles?topic=mitch")
-        .expect(200)
-        .then(({ body: {articles}}) => {
-          expect(articles.length).toBe(12);
-          articles.forEach((article) => {
-            expect(article.topic).toBe("mitch");
+
+      describe('topic', () => {
+        test('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
+          return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(({ body: {articles}}) => {
+            expect(articles.length).toBe(12);
+            articles.forEach((article) => {
+              expect(article.topic).toBe("mitch");
+            });
           });
         });
+        test("GET:200 when given topic query that exists, but has no associated articles", () => {
+          return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({ body: {articles} }) => {
+              expect(articles).toEqual([]);
+            });
+        });
+        test("GET:404  sends an appropriate status and error message when given a valid but non-existent topic", () => {
+          return request(app)
+            .get("/api/articles?topic=climbing")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("No articles found for topic: climbing");
+            });
+        });
       });
-      test("GET:200 when given topic query that exists, but has no associated articles", () => {
-        return request(app)
-          .get("/api/articles?topic=paper")
+
+      describe('sort by', () => {
+        test('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
+          return request(app)
+          .get("/api/articles?sort_by=title")
           .expect(200)
-          .then(({ body: {articles} }) => {
-            expect(articles).toEqual([]);
+          .then(({ body: {articles}}) => {
+            expect(articles).toBeSortedBy('title', {coerce: true});
           });
-      });
-      test("GET:404  sends an appropriate status and error message when given a valid but non-existent id", () => {
-        return request(app)
-          .get("/api/articles?topic=climbing")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).toBe("No articles found for topic: climbing");
-          });
+        });
+        test("GET:200 should sort by created_at as a default", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body: {articles} }) => {
+              expect(articles).toBeSortedBy('created_at', {coerce: true});
+            });
+        });
+        test("GET:404  sends an appropriate status and error message when given an invalid category", () => {
+          return request(app)
+            .get("/api/articles?sort_by=not-a-category")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad request");
+            });
+        });
       });
     });
 });
@@ -353,9 +383,14 @@ describe("/api/users", () => {
     });
   });
 });
-// CORE: GET /api/articles/:article_id (comment_count)
-// Description
 
-// FEATURE REQUEST An article response object should also now include:
+// FEATURE REQUEST The endpoint should also accept the following queries:
 
-//     comment_count, which is the total count of all the comments with this article_id. You should make use of queries to the database in order to achieve this.
+//     sort_by, which sorts the articles by any valid column (defaults to the created_at date).
+//     order, which can be set to asc or desc for ascending or descending (defaults to descending).
+
+// Consider what errors could occur with this endpoint, and make sure to test for them.
+
+// You should not have to amend any previous tests.
+
+// Remember to add a description of this endpoint to your /api endpoint. 
