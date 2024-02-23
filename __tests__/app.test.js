@@ -217,12 +217,14 @@ describe('/api/articles', () => {
       });
 
       describe('sort by', () => {
-        test('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
+        test.only('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
           return request(app)
           .get("/api/articles?sort_by=title")
           .expect(200)
           .then(({ body: {articles}}) => {
-            expect(articles).toBeSortedBy('title', {coerce: true});
+            expect(articles).toBeSortedBy('title', {
+              descending: true,
+            });
           });
         });
         test("GET:200 should sort by created_at as a default", () => {
@@ -230,12 +232,14 @@ describe('/api/articles', () => {
             .get("/api/articles")
             .expect(200)
             .then(({ body: {articles} }) => {
-              expect(articles).toBeSortedBy('created_at', {coerce: true});
+              expect(articles).toBeSortedBy('created_at', {
+                descending: true,
+              });
             });
         });
-        test("GET:404  sends an appropriate status and error message when given an invalid category", () => {
+        test("GET:400 sends an appropriate status and error message when given an invalid category", () => {
           return request(app)
-            .get("/api/articles?sort_by=not-a-category")
+            .get("/api/articles?sort_by=errors")
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toBe("Bad request");

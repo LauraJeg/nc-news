@@ -30,8 +30,15 @@ exports.fetchArticles = (topic, sort_by = "created_at")=> {
         queryVals.push(topic);
         strQuery += ` WHERE topic = $1`;
     };
+
+    if(!validSortBy.includes(sort_by)){
+        return Promise.reject({
+            status: 400,
+            msg: `Bad request`
+          });
+    };
     strQuery += `GROUP BY article_id
-    ORDER BY articles.${sort_by} DESC;`;
+    ORDER BY ${sort_by} DESC;`;
 
     return Promise.all([fetchTopics(), db.query(strQuery, queryVals)]).then(([allTopics, articles])=> {
         //error handling
@@ -40,7 +47,7 @@ exports.fetchArticles = (topic, sort_by = "created_at")=> {
             return Promise.reject({ 
                 status: 404, 
                 msg: `No articles found for topic: ${topic}` })};
-
+        console.log(articles.rows)
         return articles.rows;
     });
 };
