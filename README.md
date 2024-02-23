@@ -53,9 +53,9 @@ To configure the database for for development, copy the following into newly cre
 PGDATABASE=nc_news
 ```
 
-### 2. Create a `` file in the project root for testing: ###
+### 2. Create a .env.test file in the project root for testing: ###
 
-To configure the database for testing, copy the following into a newly created .`.env.test` file:
+To configure the database for testing, copy the following into a newly created `.env.test` file:
 
 ```
 PGDATABASE=nc_news_test
