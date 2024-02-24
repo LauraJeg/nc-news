@@ -1,6 +1,6 @@
 
 const { fetchArticleById } = require("../models/articles-models");
-const { fetchComments, insertNewComment, removeComment, updateVotesInComment } = require("../models/comments-models");
+const { fetchComments, insertNewComment, removeComment, updateVotesInComment, fetchCommentById  } = require("../models/comments-models");
 
 exports.getCommentsByArticleId = (req,res,next) => {
     const {article_id} = req.params;
@@ -44,6 +44,15 @@ exports.patchComment = (req, res, next) => {
   
   updateVotesInComment(newVotes, comment_id)
     .then((comment)=> {
+      res.status(200).send({comment});
+    })
+    .catch(next);
+};
+
+exports.getCommentById = (req,res,next) => {
+  const {comment_id} = req.params;
+  fetchCommentById(comment_id)
+    .then((comment) => {
       res.status(200).send({comment});
     })
     .catch(next);

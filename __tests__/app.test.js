@@ -394,7 +394,7 @@ describe('/api/comments/:comment_id', () => {
   describe('GET', () => {
     test('GET:200 sends an object containing the comment related to the id to the client', () => {
       return request(app)
-      .get('/api/comments/1')
+      .get('/api/comments/2')
       .expect(200)
       .then(({body: {comment}}) => {
         expect(comment).toMatchObject({
