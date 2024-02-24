@@ -412,6 +412,60 @@ describe('/api/comments/:comment_id', () => {
         });
     });
   });
+  describe('PATCH requests', () => {
+    test("PATCH 200: responds with updated comment", () => {
+      return request(app)
+        .patch("/api/comments/2")
+        .send({ inc_votes: -1 })
+        .expect(200)
+        .then(({ body: { comment } }) => {
+          expect(comment).toMatchObject({
+            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+            votes: 11,
+            author: "butter_bridge",
+            article_id: 3,
+            created_at: expect.any(String),
+          });
+        });
+    });
+    test("PATCH 404: sends an appropriate status and error message when given a valid but non-existent id", () => {
+      return request(app)
+        .patch("/api/comments/999")
+        .send({ inc_votes: 40 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("No comment found for comment_id: 999");
+        });
+    });
+    test("PATCH 400: sends an appropriate status and error message when given an invalid id", () => {
+      return request(app)
+        .patch("/api/comments/not-a-comment")
+        .send({ inc_votes: 3 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("PATCH 400: responds with appropriate status and error message when request has missing fields", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .send({})
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("PATCH 400: responds with appropriate status and error message when request has invalid content", () => { //may not want depedning on promise.all
+      return request(app)
+        .patch("/api/comments/5")
+        .send({ inc_votes: "one" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+
+  });
 });
 
 describe("/api/users", () => {
