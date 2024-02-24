@@ -217,7 +217,7 @@ describe('/api/articles', () => {
       });
 
       describe('sort by', () => {
-        test('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
+        test.only('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
           return request(app)
           .get("/api/articles?sort_by=title")
           .expect(200)
