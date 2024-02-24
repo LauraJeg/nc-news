@@ -55,14 +55,18 @@ describe('/api/articles/:article_id', () => {
       return request(app)
       .get('/api/articles/1')
       .expect(200)
-      .then(({body}) => {
-        expect(body.article.title).toBe("Living in the shadow of a great man");
-        expect(body.article.topic).toBe("mitch");
-        expect(body.article.author).toBe( "butter_bridge");
-        expect(body.article.body).toBe( "I find this existence challenging");
-        expect(body.article).toHaveProperty("created_at");
-        expect(body.article.votes).toBe(100);
-        expect(body.article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+      .then(({body: {article}}) => {
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "Living in the shadow of a great man",
+          article_id: 1,
+          body: "I find this existence challenging",
+          topic: "mitch",
+          created_at: expect.any(String),
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
       });
     });
     test("GET:200 responce includes a comment_count property", () => {
@@ -425,6 +429,31 @@ describe("/api/users", () => {
               avatar_url: expect.any(String),
             });
           });
+        });
+    });
+  });
+});
+
+describe('/api/users/:username', () => {
+  describe('GET', ()=> {
+    test('GET:200 sends an object containing the user related to the username to the client', () => {
+      return request(app)
+      .get('/api/users/butter_bridge')
+      .expect(200)
+      .then(({body : {user}}) => {
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+        });
+      });
+    });
+    test("GET 404: responds with appropriate status and error message when username does not match in the database", () => {
+      return request(app)
+        .get("/api/users/pinkman")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("No user found for username: pinkman");
         });
     });
   });
