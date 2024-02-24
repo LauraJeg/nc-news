@@ -41,3 +41,14 @@ const db = require(`${__dirname}/../../db/connection.js`);
         return result
       });
     };
+
+    exports.updateVotesInComment = (newVotes, comment_id) => {
+      return db.query(`UPDATE comments
+                  SET votes = votes + $1
+                  WHERE  comment_id = $2
+                  RETURNING *`, 
+                  [newVotes.inc_votes, comment_id])
+                  .then((result) => {
+                      return result.rows[0];
+                  });
+    };
