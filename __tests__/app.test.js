@@ -435,7 +435,7 @@ describe("/api/users", () => {
 });
 
 describe('/api/users/:username', () => {
-  describe.only('GET', ()=> {
+  describe('GET', ()=> {
     test('GET:200 sends an object containing the user related to the username to the client', () => {
       return request(app)
       .get('/api/users/butter_bridge')
