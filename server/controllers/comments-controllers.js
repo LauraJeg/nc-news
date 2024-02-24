@@ -42,8 +42,8 @@ exports.patchComment = (req, res, next) => {
   const {comment_id} = req.params;
   const newVotes = req.body;
   
-  updateVotesInComment(newVotes, comment_id)
-    .then((comment)=> {
+  Promise.all([fetchCommentById(comment_id), updateVotesInComment(newVotes, comment_id)])
+    .then(([commentCheck, comment])=> {
       res.status(200).send({comment});
     })
     .catch(next);
