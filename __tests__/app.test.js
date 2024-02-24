@@ -221,7 +221,7 @@ describe('/api/articles', () => {
       });
 
       describe('sort by', () => {
-        test.only('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
+        test('GET:200 should take a sort_by query which sorts the articles by the category specified in the query.', () => {
           return request(app)
           .get("/api/articles?sort_by=title")
           .expect(200)
@@ -413,7 +413,7 @@ describe('/api/comments/:comment_id', () => {
     });
   });
   describe('PATCH requests', () => {
-    test.only("PATCH 200: responds with updated comment", () => {
+    test("PATCH 200: responds with updated comment", () => {
       return request(app)
         .patch("/api/comments/2")
         .send({ inc_votes: -1 })

@@ -41,7 +41,10 @@ exports.deleteComment = (req, res, next)=> {
 exports.patchComment = (req, res, next) => {
   const {comment_id} = req.params;
   const newVotes = req.body;
-  updateVotesInComment(newVotes, comment_id).then((comment)=> {
-    res.status(200).send({comment});
-  })
+  
+  updateVotesInComment(newVotes, comment_id)
+    .then((comment)=> {
+      res.status(200).send({comment});
+    })
+    .catch(next);
 };
