@@ -3,15 +3,15 @@ const app = express();
 app.use(express.json());
 
 const { getTopics } = require('./controllers/topics-controllers');
-const { getEndpoints } = require('./controllers/endpoint-controller');
 const { getArticleById, getArticles, patchVotesByArticleId} = require('./controllers/articles-controllers');
 const { getCommentsByArticleId, postNewComment, deleteComment } = require('./controllers/comments-controllers');
 const { customErrors, psqlErrors, serverErrors } = require('./controllers/error-controllers');
 const { getUsers } = require('./controllers/users-controllers');
+const apiRouter = require('./routers/api-router');
+
+app.use('/api', apiRouter)
 
 
-
-app.get('/api', getEndpoints);
 
 app.get('/api/topics', getTopics);
 
@@ -30,7 +30,7 @@ app.delete('/api/comments/:comment_id', deleteComment);
 app.get('/api/users', getUsers);
 
 app.all('/*', (req, res, next)=> {
-    res.status(404).send({msg: 'Path not found'});
+    res.status(404).send({msg: 'Path not found'}); //change to error handling controller
   });
   app.use(customErrors);
   app.use(psqlErrors);
