@@ -391,6 +391,38 @@ describe('/api/articles/:article_id/comments', () => {
     });
 });
 describe('/api/comments/:comment_id', () => {
+  describe('GET', () => {
+    test('GET:200 sends an object containing the comment related to the id to the client', () => {
+      return request(app)
+      .get('/api/comments/1')
+      .expect(200)
+      .then(({body: {comment}}) => {
+        expect(comment).toMatchObject({
+          body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          votes: 14,
+          author: "butter_bridge",
+          article_id: 1,
+          created_at: expect.any(String),
+        });
+      });
+    });
+    test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+        return request(app)
+          .get('/api/comments/999')
+          .expect(404)
+          .then(({body}) => {
+            expect(body.msg).toBe('No comment found for comment_id: 999');
+          });
+      });
+      test('GET:400 sends an appropriate status and error message when given an invalid id', () => {
+        return request(app)
+          .get('/api/comments/not-a-comment')
+          .expect(400)
+          .then(({body}) => {
+            expect(body.msg).toBe('Bad request');
+          });
+    });
+  });
   describe('DELETE', () => {
     test("DELETE:204 deletes the specified comment and does not respond with a body", () => {
       return request(app).delete("/api/comments/4").expect(204);
