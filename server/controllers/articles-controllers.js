@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles, updateVotes } = require("../models/articles-models");
+const { fetchArticleById, fetchArticles, updateVotes, insertNewArticle } = require("../models/articles-models");
 
 exports.getArticleById = (req, res, next) => {
 
@@ -26,4 +26,13 @@ exports.patchVotesByArticleId = (req,res,next) => {
         })
         .catch(next);
 };
+
+exports.postNewArticle = (req, res, next )=> {
+    const newArticle = req.body;
+    insertNewArticle(newArticle)
+        .then((article)=> {
+            article.comment_count = 0;
+            res.status(201).send({ article});
+        })
+}
 

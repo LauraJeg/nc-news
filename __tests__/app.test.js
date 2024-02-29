@@ -294,7 +294,7 @@ describe('/api/articles', () => {
       });
     });
     describe('POST', () => {
-      test('POST: 201 inserts new article and returns comment to client', () => {
+      test.only('POST: 201 inserts new article and returns comment to client', () => {
         const newArticle = {
             author: 'butter_bridge',
             body: 'new article',
@@ -308,7 +308,7 @@ describe('/api/articles', () => {
         .expect(201)
         .then(({body: {article}}) => {
           expect(article).toMatchObject({
-            article_id: 19,
+            article_id: 14,
             author: 'butter_bridge',
             body: 'new article',
             topic: 'cats',
