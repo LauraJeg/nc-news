@@ -293,6 +293,86 @@ describe('/api/articles', () => {
         });
       });
     });
+    describe('POST', () => {
+      test('POST: 201 inserts new article and returns comment to client', () => {
+        const newArticle = {
+            author: 'butter_bridge',
+            body: 'new article',
+            topic: 'cats',
+            title: 'A catty article',
+            article_img_url: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fi.natgeofe.com%2Fn%2F548467d8-c5f1-4551-9f58-6817a8d2c45e%2FNationalGeographic_2572187_square.jpg&tbnid=eAP244UcF5wdYM&vet=12ahUKEwiAtf6yxtGEAxVZVaQEHT0bAMIQMygAegQIARBx..i&imgrefurl=https%3A%2F%2Fwww.nationalgeographic.com%2Fanimals%2Fmammals%2Ffacts%2Fdomestic-cat&docid=K6Qd9XWnQFQCoM&w=3072&h=3072&itg=1&q=cat&client=ubuntu-sn&ved=2ahUKEwiAtf6yxtGEAxVZVaQEHT0bAMIQMygAegQIARBx'
+        };
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .expect(201)
+        .then(({body: {article}}) => {
+          expect(article).toMatchObject({
+            article_id: 19,
+            author: 'butter_bridge',
+            body: 'new article',
+            topic: 'cats',
+            title: 'A catty article',
+            article_img_url: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fi.natgeofe.com%2Fn%2F548467d8-c5f1-4551-9f58-6817a8d2c45e%2FNationalGeographic_2572187_square.jpg&tbnid=eAP244UcF5wdYM&vet=12ahUKEwiAtf6yxtGEAxVZVaQEHT0bAMIQMygAegQIARBx..i&imgrefurl=https%3A%2F%2Fwww.nationalgeographic.com%2Fanimals%2Fmammals%2Ffacts%2Fdomestic-cat&docid=K6Qd9XWnQFQCoM&w=3072&h=3072&itg=1&q=cat&client=ubuntu-sn&ved=2ahUKEwiAtf6yxtGEAxVZVaQEHT0bAMIQMygAegQIARBx',
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count:0
+          });
+        });
+    });
+    test('POST: 201 adds default url when not included in the inserted article', () => {
+      const newArticle = {
+        author: 'butter_bridge',
+        body: 'new article',
+        topic: 'cats',
+        title: 'A catty article'
+    };
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(({body: {article}}) => {
+      expect(article).toMatchObject({
+        article_id: 19,
+        author: 'butter_bridge',
+        body: 'new article',
+        topic: 'cats',
+        title: 'A catty article',
+        article_img_url: 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
+        created_at: expect.any(String),
+        votes: 0,
+        comment_count:0
+      });
+    });
+    });
+
+      test("POST 404: sends an appropriate status and error message when given a non-existant user", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: 'butter_bridge',
+            body: 'new article',
+            topic: 'dogs',
+            title: 'A doggy article'
+        })
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("No topic found for topic: dogs");
+          });
+      }); //maybe don't include
+      test("POST 400: responds with appropriate status and error message when request has missing fields", () => {
+        return request(app)
+          .get("/api/articles")
+          .send({
+            username: "butter_bridge",
+            body: "New article is great!"
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request");
+          });
+      });
+    })
 });
 describe('/api/articles/:article_id/comments', () => {
   describe('GET', () => {
@@ -376,7 +456,7 @@ describe('/api/articles/:article_id/comments', () => {
               expect(msg).toBe('No article found for article_id: 987');
             });
         });
-        test("POST 400: sends an appropriate status and error message when given an invalid id", () => {
+        test("POST 400:  responds with appropriate status and error message when request has missing fields", () => {
           return request(app)
             .get("/api/articles/not-an-article/comments")
             .send({
