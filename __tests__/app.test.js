@@ -294,7 +294,7 @@ describe('/api/articles', () => {
       });
     });
     describe('POST', () => {
-      test.only('POST: 201 inserts new article and returns comment to client', () => {
+      test('POST: 201 inserts new article and returns article to client', () => {
         const newArticle = {
             author: 'butter_bridge',
             body: 'new article',
@@ -333,7 +333,7 @@ describe('/api/articles', () => {
     .expect(201)
     .then(({body: {article}}) => {
       expect(article).toMatchObject({
-        article_id: 19,
+        article_id: 14,
         author: 'butter_bridge',
         body: 'new article',
         topic: 'cats',
@@ -346,7 +346,7 @@ describe('/api/articles', () => {
     });
     });
 
-      test("POST 404: sends an appropriate status and error message when given a non-existant user", () => {
+      test("POST 404: sends an appropriate status and error message when given a non-existant topic", () => {
         return request(app)
           .post("/api/articles")
           .send({
@@ -359,13 +359,28 @@ describe('/api/articles', () => {
           .then(({ body: { msg } }) => {
             expect(msg).toBe("No topic found for topic: dogs");
           });
-      }); //maybe don't include
+      });
+      test("POST 404: sends an appropriate status and error message when given a non-existant user", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: 'zabito',
+            body: 'new article',
+            topic: 'cats',
+            title: 'A catty article'
+        })
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("No user found for username: zabito");
+          });
+      });
       test("POST 400: responds with appropriate status and error message when request has missing fields", () => {
         return request(app)
-          .get("/api/articles")
+          .post("/api/articles")
           .send({
-            username: "butter_bridge",
-            body: "New article is great!"
+            author: 'butter_bridge',
+            body: 'new article',
+            topic: 'cats'
           })
           .expect(400)
           .then(({ body: { msg } }) => {
