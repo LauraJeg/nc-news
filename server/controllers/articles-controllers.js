@@ -1,4 +1,6 @@
-const { fetchArticleById, fetchArticles, updateVotes } = require("../models/articles-models");
+const { fetchArticleById, fetchArticles, updateVotes, insertNewArticle } = require("../models/articles-models");
+const { fetchTopics } = require("../models/topics-models");
+const { fetchUsersByUsername } = require("../models/users-models");
 
 exports.getArticleById = (req, res, next) => {
 
@@ -26,4 +28,33 @@ exports.patchVotesByArticleId = (req,res,next) => {
         })
         .catch(next);
 };
+
+exports.postNewArticle = (req, res, next )=> {
+    const newArticle = req.body;
+    //nested insertNewArticle due to concurrency issue
+    Promise.all([fetchUsersByUsername(newArticle.author), fetchTopics()])
+        .then(([errUser, errTopics])=> {
+            let topicExists = false;
+            errTopics.forEach(topic => {
+                if(topic.slug === newArticle.topic) topicExists = true
+            });
+            if(topicExists === false){
+                return Promise.reject({ 
+                    status: 404, 
+                    msg: `No topic found for topic: ${newArticle.topic}` });
+            }
+        })
+        .then(()=>
+            insertNewArticle(newArticle)
+                .then((article)=> {
+                    article.comment_count = 0;
+                    res.status(201).send({ article})
+                
+                })
+                .catch(next))
+        .catch(next);
+
+        
+}
+
 

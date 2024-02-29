@@ -65,3 +65,12 @@ exports.updateVotes = (newVotes, article_id) => {
          });
 };
 
+exports.insertNewArticle = ({author, body, topic, title, article_img_url= "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"}) => {
+    return db
+        .query(`INSERT INTO articles (author, body, topic, title, article_img_url)
+        VALUES ($1, $2,$3,$4,$5) RETURNING *;`,
+        [author, body, topic, title, article_img_url])
+        .then((result) => {
+            return result.rows[0];
+          });
+};

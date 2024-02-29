@@ -143,6 +143,46 @@
           "comment_id": 2
         }
       }
+    },
+    "POST /api/articles": {
+      "description": "serves new article to the client",
+      "queries": [],
+      "reqBodyFormat": {"author": "user",
+                            "body": "new article",
+                            "topic": "cats",
+                            "title": "A catty article",
+                            "article_img_url": "optional url"
+                       },
+      "exampleResponse": { 
+        "article": {
+          "article_id": 19,
+          "author": "user",
+          "body": "new article",
+          "topic": "cats",
+          "title": "A catty article",
+          "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          "created_at": 1586179020000,
+          "votes": 0,
+          "comment_count":0          
+        }
+      }
+    },
+    "POST /api/articles/:article_id/comments": {
+      "description": "serves new comment to the client",
+      "queries": ["article_id"],
+      "reqBodyFormat": {"username": "user",
+                        "body": "new comment"
+                       },
+      "exampleResponse": { 
+        "comment": {
+              "comment_id": 19,
+              "author": "user",
+              "votes": 0,
+              "article_id": 2,
+              "body": "new comment",
+              "created_at": 1586179020000   
+        }
+      }
     }
   }
 
