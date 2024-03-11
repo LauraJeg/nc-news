@@ -31,7 +31,7 @@ This project uses `Node.js` and `PostgreSQL` to build a backend database and ass
 Clone the repository:
 
 ```
-$ git clone https://github.com/emlips/nc-news.git
+$ git clone https://github.com/LauraJeg/nc-news.git
 ```
 
 Then navigate to the repository.
