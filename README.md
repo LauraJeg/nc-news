@@ -4,6 +4,8 @@
 
 Link to hosted version: https://nc-news-94l5.onrender.com 
 
+Add /api at the end of the URL to see all the hosted endpoints.
+
 ## Overview
 
 The intention of this project is to mimic the building of a real world backend service (such as GitHub) which should provide this information to the front end architecture.
