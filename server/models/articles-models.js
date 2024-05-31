@@ -20,7 +20,7 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = (topic, sort_by = "created_at", order='desc')=> {
+exports.fetchArticles = (topic, sort_by = "created_at", order='desc',limit = 10,p = 1)=> {
     const queryVals = [];
     let strQuery = `SELECT article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.comment_id) as comment_count FROM comments
     RIGHT JOIN articles USING (article_id)`;
@@ -33,17 +33,20 @@ exports.fetchArticles = (topic, sort_by = "created_at", order='desc')=> {
         strQuery += ` WHERE topic = $1`;
     };
 
-    if(!validSortBy.includes(sort_by) || !validOrder.includes(order)){
+    if(!validSortBy.includes(sort_by) || !validOrder.includes(order) || !Number(limit) || !Number(p)){
         return Promise.reject({
             status: 400,
             msg: `Bad request`
           });
     };
     strQuery += `GROUP BY article_id
-    ORDER BY ${sort_by} ${order};`;
+    ORDER BY ${sort_by} ${order}
+    LIMIT ${limit}
+    OFFSET ${(p - 1) * limit};`;
 
     return Promise.all([fetchTopics(), db.query(strQuery, queryVals)]).then(([allTopics, articles])=> {
         //error handling
+        console.log(articles)
         if (articles.rows.length === 0) {
             if(allTopics.find(topicData => topicData.slug === topic) !== undefined) return articles.rows;
             return Promise.reject({ 
