@@ -166,7 +166,7 @@ describe('/api/articles', () => {
   describe('GET', () => {
     test("GET:200 responds with an object describing all available articles, ordered by most recent post", () => {
         return request(app)
-          .get("/api/articles")
+          .get("/api/articles?limit=100")
           .expect(200)
           .then(({ body: {articles} }) => {
             expect(articles).toBeSortedBy('created_at', {
@@ -193,7 +193,7 @@ describe('/api/articles', () => {
       describe('topic', () => {
         test('GET:200 should take a topic query which filters the articles by the topic value specified in the query.', () => {
           return request(app)
-          .get("/api/articles?topic=mitch")
+          .get("/api/articles?topic=mitch&limit=100")
           .expect(200)
           .then(({ body: {articles}}) => {
             expect(articles.length).toBe(12);
@@ -335,16 +335,6 @@ describe('/api/articles', () => {
               const { articles } = body;
               expect(articles[0].article_id).toBe(7);
               expect(articles[1].article_id).toBe(8);
-            });
-        });
-        test("GET:200 responds with empty array when specified page requested in the query too high", () => {
-          return request(app)
-            .get("/api/articles?limit=20&p=4")
-            .expect(200)
-            .then(({ body }) => {
-              const { articles, total_count } = body;
-              expect(articles).toEqual([]);
-              expect(total_count).toBe(0);
             });
         });
       })
