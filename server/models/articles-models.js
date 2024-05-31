@@ -46,7 +46,6 @@ exports.fetchArticles = (topic, sort_by = "created_at", order='desc',limit = 10,
 
     return Promise.all([fetchTopics(), db.query(strQuery, queryVals)]).then(([allTopics, articles])=> {
         //error handling
-        console.log(articles)
         if (articles.rows.length === 0) {
             if(allTopics.find(topicData => topicData.slug === topic) !== undefined) return articles.rows;
             return Promise.reject({ 
