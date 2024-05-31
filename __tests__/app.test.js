@@ -292,6 +292,62 @@ describe('/api/articles', () => {
             });
         });
       });
+      describe('pagination', () => {
+        test("GET:200 should respond with the number of articles limited by query", () => {
+          return request(app)
+            .get("/api/articles?limit=5")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles.length).toBe(5);
+            });
+        });
+        test("GET:200 when no limit query received, responds with 10 articles as default ", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles.length).toBe(10);
+            });
+        });
+        test("GET:200 responds with a default total_count property of 10", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.total_count).toBe(10);
+            });
+        });
+        test("GET:200 responds with a total_count property of actual articles received", () => {
+          return request(app)
+            .get("/api/articles?topic=cats&limit=8")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.total_count).toBe(1);
+            });
+        });
+        test("GET:200 responds with the specified page", () => {
+          return request(app)
+            .get("/api/articles?sort_by=article_id&order=asc&limit=2&p=4")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles[0].article_id).toBe(7);
+              expect(articles[1].article_id).toBe(8);
+            });
+        });
+        test("GET:200 responds with empty array when specified page requested in the query too high", () => {
+          return request(app)
+            .get("/api/articles?limit=20&p=4")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles, total_count } = body;
+              expect(articles).toEqual([]);
+              expect(total_count).toBe(0);
+            });
+        });
+      })
     });
     describe('POST', () => {
       test('POST: 201 inserts new article and returns article to client', () => {
@@ -629,3 +685,4 @@ describe('/api/users/:username', () => {
     });
   });
 });
+
