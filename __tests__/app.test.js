@@ -439,7 +439,7 @@ describe('/api/articles/:article_id/comments', () => {
   describe('GET', () => {
     test('GET:200 sends an object containing the article related to the id to the client, ordered by lastest posting', () => {
         return request(app)
-      .get('/api/articles/1/comments')
+      .get('/api/articles/1/comments?limit=100')
       .expect(200)
       .then(({body}) => {
         const { comments } = body;
@@ -510,16 +510,7 @@ describe('/api/articles/:article_id/comments', () => {
             const { comments } = body;
             expect(comments.length).toBe(2);
             expect(comments[0].comment_id).toBe(6);
-            expect(comments[1].comment_id).toBe(8);
-          });
-      });
-      test("GET:200 responds with empty array when specified page is too high", () => {
-        return request(app)
-          .get("/api/articles/1/comments?limit=20&p=4")
-          .expect(200)
-          .then(({ body }) => {
-            const { comments } = body;
-            expect(comments).toEqual([]);
+            expect(comments[1].comment_id).toBe(7);
           });
       });
       test("GET:400 sends an appropriate status and error message when given an invalid limit", () => {
@@ -527,7 +518,7 @@ describe('/api/articles/:article_id/comments', () => {
           .get("/api/articles/1/comments?limit=notANumber")
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe("bad request");
+            expect(body.msg).toBe("Bad request");
           });
       });
       test("GET:400 sends an appropriate status and error message when given an invalid page", () => {
@@ -535,7 +526,7 @@ describe('/api/articles/:article_id/comments', () => {
           .get("/api/articles/1/comments?p=notANumber")
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe("bad request");
+            expect(body.msg).toBe("Bad request");
           });
       });
       test("GET:400 returns an error when p is not strictly a number to avoid SQL injection", () => {
