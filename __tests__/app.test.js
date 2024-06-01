@@ -211,7 +211,7 @@ describe('/api/articles/:article_id', () => {
           });
       });
     });
-  describe.only('DELETE', () => {
+  describe('DELETE', () => {
       test("DELETE:204 deletes article and does not send a body back", () => {
         return request(app).delete("/api/articles/5").expect(204);
       });
