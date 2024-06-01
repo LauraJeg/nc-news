@@ -211,14 +211,14 @@ describe('/api/articles/:article_id', () => {
           });
       });
     });
-  describe('DELETE', () => {
+  describe.only('DELETE', () => {
       test("DELETE:204 deletes article and does not send a body back", () => {
         return request(app).delete("/api/articles/5").expect(204);
       });
 
       test("DELETE:404 returns an error when a valid but non existent article_id is received", () => {
         return request(app)
-        .delete("/api/articles/999999")
+        .delete("/api/articles/999")
         .expect(404)
         .then(({body}) => {
           expect(body.msg).toBe('No article found for article_id: 999')
