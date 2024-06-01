@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles, updateVotes, insertNewArticle } = require("../models/articles-models");
+const { fetchArticleById, removeArticle, fetchArticles, updateVotes, insertNewArticle } = require("../models/articles-models");
 const { fetchTopics } = require("../models/topics-models");
 const { fetchUsersByUsername } = require("../models/users-models");
 
@@ -57,4 +57,15 @@ exports.postNewArticle = (req, res, next )=> {
         
 }
 
+exports.deleteArticleById = (req, res, next) => {
+    const { article_id } = req.params;
+    fetchArticleById(article_id)
+      .then(() => {
+        return removeArticle(article_id);
+      })
+      .then(() => {
+        res.status(204).send();
+      })
+      .catch(next);
+  };
 

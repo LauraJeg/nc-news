@@ -98,6 +98,7 @@ describe('/api/topics', () => {
 });
 
 describe('/api/articles/:article_id', () => {
+  describe('GET', () => {
     test('GET:200 sends an object containing the article related to the id to the client', () => {
       return request(app)
       .get('/api/articles/1')
@@ -150,6 +151,8 @@ describe('/api/articles/:article_id', () => {
             expect(body.msg).toBe('Bad request');
           });
     });
+  })
+   
     describe("PATCH requests", () => {
       test("PATCH 200: responds with correctly updated article", () => {
         return request(app)
@@ -179,7 +182,7 @@ describe('/api/articles/:article_id', () => {
             expect(msg).toBe("Bad request");
           });
       });
-    });
+    
       test("PATCH 404: sends an appropriate status and error message when given a valid but non-existent id", () => {
         return request(app)
           .patch("/api/articles/999")
@@ -207,6 +210,29 @@ describe('/api/articles/:article_id', () => {
             expect(msg).toBe("Bad request");
           });
       });
+    });
+  describe('DELETE', () => {
+      test("DELETE:204 deletes article and does not send a body back", () => {
+        return request(app).delete("/api/articles/5").expect(204);
+      });
+
+      test("DELETE:404 returns an error when a valid but non existent article_id is received", () => {
+        return request(app)
+        .delete("/api/articles/999")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe('No article found for article_id: 999')
+        })
+      })
+      test("DELETE:400 returns an error when an invalid article_id is received", () => {
+        return request(app)
+        .delete("/api/articles/notAnId")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Bad request")
+        })
+      })
+  })
 });
 
 describe('/api/articles', () => {

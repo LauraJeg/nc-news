@@ -76,3 +76,7 @@ exports.insertNewArticle = ({author, body, topic, title, article_img_url= "https
             return result.rows[0];
           });
 };
+
+exports.removeArticle = (article_id) => {
+    return db.query(`DELETE FROM articles WHERE article_id = $1`, [article_id]);
+  };
