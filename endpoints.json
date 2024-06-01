@@ -184,6 +184,20 @@
               "created_at": 1586179020000   
         }
       }
+    },
+    "POST /api/topics": {
+      "description": "serves the newly posted topic",
+      "queries": [],
+      "reqBodyFormat": {
+        "slug": "newTopic",
+        "description": "newDescription"
+      },
+      "exampleResponse": {
+        "topic": {
+          "slug": "newTopic",
+          "description": "newDescription"
+        }
+      }
     }
   }
 

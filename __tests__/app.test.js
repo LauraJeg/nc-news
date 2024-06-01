@@ -36,6 +36,7 @@ describe("/api", () => {
   });
 
 describe('/api/topics', () => {
+  describe('GET', () => {
     test('GET:200 sends an array of topics to the client', () => {
       return request(app)
         .get('/api/topics')
@@ -48,6 +49,52 @@ describe('/api/topics', () => {
           });
         });
     });
+  });  
+  describe('POST', ()=> {
+    test("POST:201 responds with the same object", () => {
+      const newTopic = {
+        slug: "Dogs",
+        description: "Doggy traits"
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(201)
+        .then(({ body }) => {
+          const { topic } = body;
+          expect(topic).toMatchObject({
+            slug: "Dogs",
+            description: "Doggy traits"
+          });
+        });
+    });
+    test("POST:201 accepts request body without a description", () => {
+      const newTopic = {
+        slug: "Dogs",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(201)
+        .then(({ body }) => {
+          const { topic } = body;
+          expect(topic.slug).toBe("Dogs");
+          expect(topic.description).toBe(null);
+        });
+    });
+    test("POST:400 returns an error when body is missing slug field", () => {
+      const newTopic = {
+        description: "This is incorrect",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+  })
 });
 
 describe('/api/articles/:article_id', () => {
