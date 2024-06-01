@@ -48,7 +48,7 @@
     },
     "GET /api/articles/:article_id/comments": {
       "description": "serves an object relating to article_id's related comments",
-      "queries": ["article id"],
+      "queries": ["article id", "limit", "p"],
       "exampleResponse": {
         "comments": [
           {
