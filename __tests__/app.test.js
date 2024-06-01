@@ -439,7 +439,7 @@ describe('/api/articles/:article_id/comments', () => {
   describe('GET', () => {
     test('GET:200 sends an object containing the article related to the id to the client, ordered by lastest posting', () => {
         return request(app)
-      .get('/api/articles/1/comments')
+      .get('/api/articles/1/comments?limit=100')
       .expect(200)
       .then(({body}) => {
         const { comments } = body;
@@ -481,6 +481,69 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(204)
       .then(({body}) => {
         expect(body).toEqual({});
+      });
+    });
+    describe('Comments Pagination', () => {
+      test("GET:200 responds with the number of comments requested", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=7")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(7);
+          });
+      });
+      test("GET:200 should give 10 comments per page as default", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(10);
+          });
+      });
+      test("GET:200 responds with the specified page", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=2&p=3")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments.length).toBe(2);
+            expect(comments[0].comment_id).toBe(6);
+            expect(comments[1].comment_id).toBe(7);
+          });
+      });
+      test("GET:400 sends an appropriate status and error message when given an invalid limit", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=notANumber")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request");
+          });
+      });
+      test("GET:400 sends an appropriate status and error message when given an invalid page", () => {
+        return request(app)
+          .get("/api/articles/1/comments?p=notANumber")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request");
+          });
+      });
+      test("GET:400 returns an error when p is not strictly a number to avoid SQL injection", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=3&p=2;")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request");
+          });
+      });
+      test("GET:400 returns an error when limit is not strictly a number to avoid SQL injection", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=5;")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad request");
+          });
       });
     });
   });

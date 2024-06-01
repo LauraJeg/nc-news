@@ -4,8 +4,9 @@ const { fetchComments, insertNewComment, removeComment, updateVotesInComment, fe
 
 exports.getCommentsByArticleId = (req,res,next) => {
     const {article_id} = req.params;
+    const { limit, p } = req.query;
     return Promise.all([
-        fetchComments(article_id),
+        fetchComments(article_id, limit, p),
         fetchArticleById(article_id),
       ])
         .then((returnedPromises) => {

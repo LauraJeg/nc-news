@@ -1,12 +1,15 @@
 const db = require(`${__dirname}/../../db/connection.js`);
 
 
-    exports.fetchComments = (article_id) => {
+    exports.fetchComments = (article_id, limit = 10, p = 1) => {
         return db
         .query(`SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments 
         RIGHT JOIN  articles  USING (article_id)
-        WHERE article_id = $1;`, [article_id])
+        WHERE article_id = $1
+        LIMIT $2 
+        OFFSET $3;`, [article_id, limit, (p - 1) * limit])
         .then((result) => {
+          // console.log(result)
             const comments = result.rows;
             if (comments.length === 0) return Promise.reject(({
               status: 404,
